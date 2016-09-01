@@ -5,6 +5,7 @@ import com.hierynomus.smbj.DefaultConfig
 import com.hierynomus.smbj.ProgressListener
 import com.hierynomus.smbj.SMBClient
 import com.hierynomus.smbj.auth.AuthenticationContext
+import com.hierynomus.smbj.io.FileByteChunkProvider
 import com.hierynomus.smbj.share.DiskShare
 import com.hierynomus.smbj.share.File
 import com.hierynomus.mssmb2.SMB2CreateDisposition
@@ -102,10 +103,10 @@ class SmbjClient {
         long totalBytes = 0
         def startMillis = System.currentTimeMillis()
         logger.info(">>> Start copying $source to $dest")
-        smbFile.write(new BufferedInputStream(new FileInputStream(localPath)), new ProgressListener() {
+        smbFile.write(new FileByteChunkProvider(new java.io.File(localPath)), new ProgressListener() {
             @Override
             void onProgressChanged(long b, long tb) {
-                totalBytes = b
+                totalBytes = tb
                 logger.debug("Written $totalBytes bytes of $tb total")
             }
         })
